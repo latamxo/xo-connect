@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { v4 as uuidv4 } from 'uuid';
-//import Web3 from 'web3';
+const Web3 = require('web3');
 
 
 export enum Method {
@@ -71,17 +71,17 @@ class _XOConnect {
                 onSuccess: (res: Response) => {
                     clearTimeout(timeout);
 
-                    /*const client = res.data.client;
+                    const client = res.data.client;
                     const message = `xoConnect-${res.id}`;
                     const signature = client.signature
-                    const web3 = new Web3();
+                    const web3 = new Web3("");
                     const address = web3.eth.accounts.recover(message, signature);
 
                     const eth = client.currencies.find(c => c.id == 'ETH');
 
                     if (eth.address !== address) {
                         throw new Error("Invalid signature");
-                    }*/
+                    }
 
                     resolve({
                         id: res.id,
