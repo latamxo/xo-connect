@@ -71,7 +71,7 @@ class _XOConnect {
                 onSuccess: (res: Response) => {
                     clearTimeout(timeout);
 
-                    const client = res.data.client;
+                    /*const client = res.data.client;
                     const message = `xoConnect-${res.id}`;
                     const signature = client.signature
                     const web3 = new Web3();
@@ -81,7 +81,7 @@ class _XOConnect {
 
                     if (eth.address !== address) {
                         throw new Error("Invalid signature");
-                    }
+                    }*/
 
                     resolve({
                         id: res.id,
