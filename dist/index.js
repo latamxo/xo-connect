@@ -49,6 +49,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.XOConnect = exports.Method = void 0;
 var uuid_1 = require("uuid");
+//import Web3 from 'web3';
 var Method;
 (function (Method) {
     Method["available"] = "available";

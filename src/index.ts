@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import Web3 from 'web3';
+//import Web3 from 'web3';
 
 
 export enum Method {
