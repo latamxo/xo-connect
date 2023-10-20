@@ -1,6 +1,6 @@
 {
     "name": "xo-connect",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "xoConnect",
     "main": "dist/index.js", 
     "module": "dist/index.js", 
@@ -15,7 +15,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/iwakawamarcos/xoconnect"
+        "url": "https://bitbucket.org/mellowwallet/xo-connect"
     },
     "keywords": [
         "xoConnect",

@@ -49,7 +49,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.XOConnect = exports.Method = void 0;
 var uuid_1 = require("uuid");
-//import Web3 from 'web3';
+var Web3 = require('web3');
 var Method;
 (function (Method) {
     Method["available"] = "available";
@@ -115,17 +115,15 @@ var _XOConnect = /** @class */ (function () {
                                     method: Method.connect,
                                     onSuccess: function (res) {
                                         clearTimeout(timeout);
-                                        /*const client = res.data.client;
-                                        const message = `xoConnect-${res.id}`;
-                                        const signature = client.signature
-                                        const web3 = new Web3();
-                                        const address = web3.eth.accounts.recover(message, signature);
-                    
-                                        const eth = client.currencies.find(c => c.id == 'ETH');
-                    
+                                        var client = res.data.client;
+                                        var message = "xoConnect-".concat(res.id);
+                                        var signature = client.signature;
+                                        var web3 = new Web3("");
+                                        var address = web3.eth.accounts.recover(message, signature);
+                                        var eth = client.currencies.find(function (c) { return c.id == 'ETH'; });
                                         if (eth.address !== address) {
                                             throw new Error("Invalid signature");
-                                        }*/
+                                        }
                                         resolve({
                                             id: res.id,
                                             client: res.data.client
