@@ -14,12 +14,14 @@ export interface Client {
     currencies: Array<{
         id: string;
         address: string;
+        symbol?: string;
+        icon?: string;
     }>;
 }
 interface RequestParams {
     method: Method;
     data?: any;
-    currency?: 'ETH' | 'BTC' | 'MATIC';
+    currency?: string;
     onSuccess: (response: Response) => void;
     onCancel: () => void;
 }
