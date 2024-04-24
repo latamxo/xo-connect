@@ -74,7 +74,7 @@ class _XOConnect {
                     const web3 = new Web3("");
                     const address = web3.eth.accounts.recover(message, signature);
 
-                    const eth = client.currencies.find((c) => c.symbol == "ETH");
+                    const eth = client.currencies.find((c) => c.id == "ethereum.mainnet.native.eth");
 
                     if (eth.address !== address) {
                         throw new Error("Invalid signature");
