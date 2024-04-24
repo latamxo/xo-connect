@@ -1,7 +1,6 @@
-import { resolve } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-const Web3 = require('web3');
-
+import { resolve } from "path";
+import { v4 as uuidv4 } from "uuid";
+const Web3 = require("web3");
 
 export enum Method {
     available = "available",
@@ -14,13 +13,13 @@ export interface Client {
     _id: string;
     alias: string;
     profileImagePath: { square: string; thumbnail: string };
-    currencies: Array<{ id: string; address: string }>;
+    currencies: Array<{ id: string; address: string; symbol?: string; icon?: string }>;
 }
 
 interface RequestParams {
     method: Method;
     data?: any;
-    currency?: 'ETH' | 'BTC' | 'MATIC'
+    currency?: string;
     onSuccess: (response: Response) => void;
     onCancel: () => void;
 }
@@ -30,23 +29,21 @@ export interface Request extends RequestParams {
 }
 
 export interface Response {
-    id: string
-    type: string
-    data: any
+    id: string;
+    type: string;
+    data: any;
 }
 
 class _XOConnect {
-
     private connectionId: string;
     private pendingRequests: Map<string, Request> = new Map();
     private client: Client;
 
-
     async delay(ms: number) {
-        await new Promise(resolve => setTimeout(() => resolve(""), ms)).then(() => console.log("fired"));
+        await new Promise((resolve) => setTimeout(() => resolve(""), ms)).then(() => console.log("fired"));
     }
 
-    async connect(): Promise<{ id: string, client: Client }> {
+    async connect(): Promise<{ id: string; client: Client }> {
         this.connectionId = uuidv4();
 
         for (let i = 0; i < 20; i++) {
@@ -56,7 +53,7 @@ class _XOConnect {
         }
 
         if (!window["XOConnect"]) {
-            return Promise.reject(new Error("No connection available"))
+            return Promise.reject(new Error("No connection available"));
         }
 
         window.addEventListener("message", this.messageHandler, false);
@@ -73,11 +70,11 @@ class _XOConnect {
 
                     const client = res.data.client;
                     const message = `xoConnect-${res.id}`;
-                    const signature = client.signature
+                    const signature = client.signature;
                     const web3 = new Web3("");
                     const address = web3.eth.accounts.recover(message, signature);
 
-                    const eth = client.currencies.find(c => c.id == 'ETH');
+                    const eth = client.currencies.find((c) => c.symbol == "ETH");
 
                     if (eth.address !== address) {
                         throw new Error("Invalid signature");
@@ -85,12 +82,12 @@ class _XOConnect {
 
                     resolve({
                         id: res.id,
-                        client: res.data.client
+                        client: res.data.client,
                     });
                 },
                 onCancel: () => {
                     reject(new Error("No connection available"));
-                }
+                },
             });
         });
     }
@@ -113,8 +110,8 @@ class _XOConnect {
                 type: "send",
                 method: request.method,
                 data: request.data,
-                currency: request.currency || 'eth'
-            })
+                currency: request.currency || "ethereum.mainnet.native.eth",
+            }),
         );
         return id;
     }
@@ -125,8 +122,8 @@ class _XOConnect {
             JSON.stringify({
                 id,
                 type: "cancel",
-                method: request.method
-            })
+                method: request.method,
+            }),
         );
         this.pendingRequests.delete(id);
     }
@@ -134,11 +131,11 @@ class _XOConnect {
     private processResponse(response: Response): void {
         const request = this.pendingRequests.get(response.id);
         if (request) {
-            if (response.type == 'receive') {
+            if (response.type == "receive") {
                 request.onSuccess(response);
             }
-            if (response.type == 'cancel') {
-                request.onCancel()
+            if (response.type == "cancel") {
+                request.onCancel();
             }
             this.pendingRequests.delete(response.id);
         }
@@ -147,9 +144,7 @@ class _XOConnect {
     private messageHandler = (event: MessageEvent) => {
         if (event.data?.length) {
             const res: Response = JSON.parse(event.data);
-            if (res.type != 'send')
-                this.processResponse(res);
-
+            if (res.type != "send") this.processResponse(res);
         }
     };
 }
