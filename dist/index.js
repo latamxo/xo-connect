@@ -10,6 +10,17 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -47,7 +58,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.XOConnect = exports.Method = void 0;
+exports.XOConnectProvider = exports.XOConnect = exports.Method = void 0;
 var uuid_1 = require("uuid");
 var Web3 = require('web3');
 var Method;
@@ -56,6 +67,7 @@ var Method;
     Method["connect"] = "connect";
     Method["personalSign"] = "personalSign";
     Method["transactionSign"] = "transactionSign";
+    Method["typedDataSign"] = "typedDataSign";
 })(Method = exports.Method || (exports.Method = {}));
 var _XOConnect = /** @class */ (function () {
     function _XOConnect() {
@@ -65,16 +77,36 @@ var _XOConnect = /** @class */ (function () {
             var _a;
             if ((_a = event.data) === null || _a === void 0 ? void 0 : _a.length) {
                 var res = JSON.parse(event.data);
-                if (res.type != 'send')
+                if (res.type != "send")
                     _this.processResponse(res);
             }
         };
     }
+    _XOConnect.prototype.setClient = function (client) {
+        this.client = client;
+    };
+    _XOConnect.prototype.getClient = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var client;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!!this.client) return [3 /*break*/, 2];
+                        return [4 /*yield*/, this.connect()];
+                    case 1:
+                        client = (_a.sent()).client;
+                        this.client = client;
+                        _a.label = 2;
+                    case 2: return [2 /*return*/, this.client];
+                }
+            });
+        });
+    };
     _XOConnect.prototype.delay = function (ms) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(function () { return resolve(""); }, ms); }).then(function () { return console.log("fired"); })];
+                    case 0: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(function () { return resolve(""); }, ms); }).then(function () { })];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -110,7 +142,7 @@ var _XOConnect = /** @class */ (function () {
                         return [2 /*return*/, new Promise(function (resolve, reject) {
                                 var timeout = setTimeout(function () {
                                     reject(new Error("No connection available"));
-                                }, 7000);
+                                }, 10000);
                                 _this.sendRequest({
                                     method: Method.connect,
                                     onSuccess: function (res) {
@@ -120,10 +152,11 @@ var _XOConnect = /** @class */ (function () {
                                         var signature = client.signature;
                                         var web3 = new Web3("");
                                         var address = web3.eth.accounts.recover(message, signature);
-                                        var eth = client.currencies.find(function (c) { return c.id == 'ETH'; });
+                                        var eth = client.currencies.find(function (c) { return c.id == "ethereum.mainnet.native.eth"; });
                                         if (eth.address !== address) {
                                             throw new Error("Invalid signature");
                                         }
+                                        _this.setClient(client);
                                         resolve({
                                             id: res.id,
                                             client: res.data.client
@@ -154,7 +187,7 @@ var _XOConnect = /** @class */ (function () {
             type: "send",
             method: request.method,
             data: request.data,
-            currency: request.currency || 'eth'
+            currency: request.currency || "eth"
         }));
         return id;
     };
@@ -170,10 +203,10 @@ var _XOConnect = /** @class */ (function () {
     _XOConnect.prototype.processResponse = function (response) {
         var request = this.pendingRequests.get(response.id);
         if (request) {
-            if (response.type == 'receive') {
+            if (response.type == "receive") {
                 request.onSuccess(response);
             }
-            if (response.type == 'cancel') {
+            if (response.type == "cancel") {
                 request.onCancel();
             }
             this.pendingRequests["delete"](response.id);
@@ -182,3 +215,5 @@ var _XOConnect = /** @class */ (function () {
     return _XOConnect;
 }());
 exports.XOConnect = new _XOConnect();
+var xo_connect_provider_1 = require("./xo-connect-provider");
+__createBinding(exports, xo_connect_provider_1, "XOConnectProvider");

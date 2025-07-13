@@ -2,24 +2,22 @@ export declare enum Method {
     available = "available",
     connect = "connect",
     personalSign = "personalSign",
-    transactionSign = "transactionSign"
+    transactionSign = "transactionSign",
+    typedDataSign = "typedDataSign"
 }
 export interface Client {
     _id: string;
     alias: string;
-    profileImagePath: {
-        square: string;
-        thumbnail: string;
-    };
+    image: string;
     currencies: Array<{
         id: string;
         address: string;
     }>;
 }
-interface RequestParams {
+export interface RequestParams {
     method: Method;
     data?: any;
-    currency?: 'ETH' | 'BTC' | 'MATIC';
+    currency?: string;
     onSuccess: (response: Response) => void;
     onCancel: () => void;
 }
@@ -35,6 +33,8 @@ declare class _XOConnect {
     private connectionId;
     private pendingRequests;
     private client;
+    setClient(client: Client): void;
+    getClient(): Promise<Client | null>;
     delay(ms: number): Promise<void>;
     connect(): Promise<{
         id: string;
@@ -47,4 +47,4 @@ declare class _XOConnect {
     private messageHandler;
 }
 export declare const XOConnect: _XOConnect;
-export {};
+export { XOConnectProvider } from "./xo-connect-provider";
