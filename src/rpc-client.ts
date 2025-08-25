@@ -10,11 +10,11 @@ export class JsonRpcClient {
     const json = await res.json();
     if (json.error) {
       const { code, message, data } = json.error;
-      throw new Error(
-        `RPC Error ${code}: ${message}${
-          data ? ` (${JSON.stringify(data)})` : ""
-        }`
-      );
+      const err: any = new Error(message || "RPC Error");
+      err.code = code;
+      err.reason = message;
+      if (data) err.data = data;
+      throw err;
     }
     return json.result as T;
   }

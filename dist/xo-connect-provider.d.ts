@@ -1,13 +1,15 @@
 type Listener = (...args: any[]) => void;
+type RpcMap = Record<string, string>;
 export declare class XOConnectProvider {
     isXOConnect: boolean;
     private listeners;
     private client;
+    private rpcMap;
     private rpc;
     private chainIdHex;
     constructor(opts: {
-        rpcUrl: string;
-        chainId: string;
+        rpcs: RpcMap;
+        defaultChainId: string;
     });
     on(event: string, listener: Listener): void;
     removeListener(event: string, listener: Listener): void;
@@ -15,6 +17,7 @@ export declare class XOConnectProvider {
     getClient(): Promise<any>;
     getAvailableCurrencies(): Promise<any>;
     private getAccounts;
+    private withLatest;
     private personalSign;
     private signTransaction;
     private signTypedData;
