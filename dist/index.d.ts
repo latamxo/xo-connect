@@ -12,8 +12,6 @@ export interface Client {
     currencies: Array<{
         id: string;
         address: string;
-        symbol?: string;
-        icon?: string;
     }>;
 }
 export interface RequestParams {

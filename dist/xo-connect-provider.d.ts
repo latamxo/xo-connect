@@ -1,24 +1,26 @@
+type Listener = (...args: any[]) => void;
 export declare class XOConnectProvider {
     isXOConnect: boolean;
     private listeners;
     private client;
-    request({ method, params, }: {
-        method: string;
-        params?: any;
-    }): Promise<any>;
-    on(event: string, listener: (...args: any[]) => void): void;
-    removeListener(event: string, listener: (...args: any[]) => void): void;
-    getClient(): Promise<any>;
-    getAvailableCurrencies(): Promise<{
-        id: string;
-        address: string;
-        symbol: string;
+    private rpc;
+    private chainIdHex;
+    constructor(opts: {
+        rpcUrl: string;
         chainId: string;
-        decimals: number;
-        image?: string;
-    }[]>;
+    });
+    on(event: string, listener: Listener): void;
+    removeListener(event: string, listener: Listener): void;
+    private emit;
+    getClient(): Promise<any>;
+    getAvailableCurrencies(): Promise<any>;
     private getAccounts;
     private personalSign;
     private signTransaction;
     private signTypedData;
+    request({ method, params, }: {
+        method: string;
+        params?: any[];
+    }): Promise<any>;
 }
+export {};
