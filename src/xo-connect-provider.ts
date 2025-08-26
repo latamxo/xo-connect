@@ -92,6 +92,7 @@ export class XOConnectProvider {
     });
   }
 
+  // XOConnectProvider: inside signTransaction
   private async signTransaction(tx: any): Promise<string> {
     const client = await this.getClient();
     const currencyId =
@@ -103,12 +104,42 @@ export class XOConnectProvider {
     if (!currencyId)
       throw new Error("Currency could not be resolved for transaction");
 
+    const [from] = await this.getAccounts();
+    const txForSigning = { from, ...tx };
+
     return new Promise((resolve, reject) => {
       XOConnect.sendRequest({
         method: Method.transactionSign,
-        data: tx, // your wallet builds/signs/broadcasts as before
+        data: txForSigning,
         currency: currencyId,
-        onSuccess: (res) => resolve(res.data?.signedTx ?? res.data?.hash),
+        onSuccess: async (res) => {
+          try {
+            const d = res?.data ?? {};
+
+            if (typeof d.signedTx === "string" && d.signedTx.startsWith("0x")) {
+              const hash = await this.rpc.call<string>(
+                "eth_sendRawTransaction",
+                [d.signedTx]
+              );
+              return resolve(hash);
+            }
+
+            const hash = d.result;
+            if (
+              typeof hash === "string" &&
+              hash.startsWith("0x") &&
+              hash.length === 66
+            ) {
+              return resolve(hash);
+            }
+
+            return reject(
+              new Error("Wallet returned neither signedTx nor transaction hash")
+            );
+          } catch (e) {
+            return reject(e);
+          }
+        },
         onCancel: () => reject(new Error("User rejected transaction")),
       });
     });
