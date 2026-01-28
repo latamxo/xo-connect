@@ -7,23 +7,29 @@ export declare class XOConnectProvider {
     private rpcMap;
     private rpc;
     private chainIdHex;
-    constructor(opts: {
-        rpcs: RpcMap;
-        defaultChainId: string;
+    private debugPanel;
+    constructor(opts?: {
+        rpcs?: RpcMap;
+        defaultChainId?: string;
+        debug?: boolean;
     });
+    private requireRpc;
     on(event: string, listener: Listener): void;
     removeListener(event: string, listener: Listener): void;
     private emit;
     getClient(): Promise<any>;
-    getAvailableCurrencies(): Promise<any>;
+    private filterValidCurrencies;
+    getAvailableCurrencies(): Promise<any[]>;
     private getAccounts;
     private withLatest;
     private personalSign;
     private signTransaction;
     private signTypedData;
+    private normalizeTypedParams;
     request({ method, params, }: {
         method: string;
         params?: any[];
     }): Promise<any>;
+    private _handleRequest;
 }
 export {};

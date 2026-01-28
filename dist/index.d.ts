@@ -1,3 +1,4 @@
+import { DebugPanel } from './debug-panel';
 export declare enum Method {
     available = "available",
     connect = "connect",
@@ -33,6 +34,7 @@ declare class _XOConnect {
     private connectionId;
     private pendingRequests;
     private client;
+    debugPanel: DebugPanel | null;
     setClient(client: Client): void;
     getClient(): Promise<Client | null>;
     delay(ms: number): Promise<void>;
